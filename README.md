@@ -38,6 +38,14 @@ Then fully quit Vesktop from the tray (closing the window only hides it), start 
 
 To update, pull the repo and run `./install.sh` again, then restart Vesktop.
 
+## Uninstall
+
+```sh
+./uninstall.sh
+```
+
+This deletes the VolumeRing build from Vesktop's folder and removes the plugin from your Vencord checkout. Vesktop then downloads stock Vencord the next time it starts. The Vencord checkout itself is kept.
+
 ## Settings
 
 Under Vencord > Plugins > VolumeRing:
