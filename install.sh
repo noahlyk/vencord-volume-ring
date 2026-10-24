@@ -17,6 +17,24 @@ need git "Install git first."
 need pnpm "Install pnpm first (npm i -g pnpm, or corepack enable)."
 need node "Install Node.js first."
 
+# Version stamp from git: v1.2.0 -> 1.2.0, 3 commits past it -> 1.2.0+3.g<hash>,
+# uncommitted changes -> ...+dirty. With no tags yet it is 0.0.0+g<hash>.
+version() {
+    git -C "$here" rev-parse --git-dir >/dev/null 2>&1 || { echo "unknown"; return; }
+    local hash dirty="" desc ver
+    hash="$(git -C "$here" rev-parse --short HEAD)"
+    [ -n "$(git -C "$here" status --porcelain --untracked-files=no)" ] && dirty=".dirty"
+    if desc="$(git -C "$here" describe --tags --long --match 'v[0-9]*' 2>/dev/null)"; then
+        ver="${desc%-*-*}"; ver="${ver#v}"
+        local n="${desc%-g*}"; n="${n##*-}"
+        [ "$n" = 0 ] || ver="$ver+$n.g$hash"
+    else
+        ver="0.0.0+g$hash"
+    fi
+    echo "$ver$dirty"
+}
+VERSION="$(version)"
+
 if [ ! -d "$vencord/.git" ]; then
     echo "Cloning Vencord into $vencord"
     git clone --depth 1 https://github.com/Vendicated/Vencord.git "$vencord"
@@ -37,7 +55,7 @@ if [ ! -d "$vesktop" ]; then
     exit 1
 fi
 cp -f dist/vencordDesktop* "$vesktop/"
-echo "Installed into Vesktop: $vesktop"
+echo "Installed VolumeRing $VERSION into Vesktop: $vesktop"
 
 cat <<MSG
 
